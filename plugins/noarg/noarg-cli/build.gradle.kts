@@ -3,6 +3,10 @@ description = "Kotlin NoArg Compiler Plugin"
 
 apply { plugin("kotlin") }
 
+configureIntellijPlugin {
+    setExtraDependencies("intellij-core")
+}
+
 dependencies {
     compileOnly(project(":compiler:frontend"))
     compileOnly(project(":compiler:frontend.java"))
@@ -17,6 +21,13 @@ dependencies {
     testCompile(project(":compiler:tests-common"))
     testCompile(projectTests(":compiler:tests-common"))
     testCompile(commonDep("junit:junit"))
+}
+
+afterEvaluate {
+    dependencies {
+        compileOnly(intellijCoreJar())
+        compileOnly(intellij { include("asm-all.jar") })
+    }
 }
 
 sourceSets {
