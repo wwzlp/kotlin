@@ -1,4 +1,3 @@
-
 description = "Kotlin AllOpen Compiler Plugin"
 
 apply { plugin("kotlin") }
@@ -7,7 +6,6 @@ dependencies {
     compileOnly(ideaSdkCoreDeps("intellij-core"))
     compileOnly(project(":compiler:plugin-api"))
     compileOnly(project(":compiler:frontend"))
-    runtime(projectRuntimeJar(":kotlin-compiler"))
     runtime(projectDist(":kotlin-stdlib"))
 
     testCompile(project(":compiler:backend"))

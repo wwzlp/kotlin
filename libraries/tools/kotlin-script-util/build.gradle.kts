@@ -1,4 +1,3 @@
-
 description = "Kotlin scripting support utilities"
 
 apply { plugin("kotlin") }
@@ -6,14 +5,12 @@ apply { plugin("kotlin") }
 dependencies {
     compile(project(":kotlin-stdlib"))
     compile(project(":kotlin-script-runtime"))
-    compileOnly(project(":compiler:cli"))
+    compile(project(":compiler:cli"))
     compileOnly(project(":compiler:daemon-common"))
     compile(project(":kotlin-daemon-client"))
     compileOnly("com.jcabi:jcabi-aether:0.10.1")
     compileOnly("org.sonatype.aether:aether-api:1.13.1")
     compileOnly("org.apache.maven:maven-core:3.0.3")
-    runtime(projectRuntimeJar(":kotlin-compiler"))
-    testCompileOnly(project(":compiler:cli"))
     testCompile(project(":kotlin-test:kotlin-test-junit"))
     testRuntime(project(":kotlin-reflect"))
     testCompile(commonDep("junit:junit"))

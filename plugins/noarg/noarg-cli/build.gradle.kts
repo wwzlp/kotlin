@@ -1,4 +1,3 @@
-
 description = "Kotlin NoArg Compiler Plugin"
 
 apply { plugin("kotlin") }
@@ -9,7 +8,6 @@ dependencies {
     compileOnly(project(":compiler:backend"))
     compileOnly(project(":compiler:util"))
     compileOnly(project(":compiler:plugin-api"))
-    runtime(projectRuntimeJar(":kotlin-compiler"))
     runtime(projectDist(":kotlin-stdlib"))
 
     testCompile(project(":compiler:backend"))
