@@ -54,7 +54,7 @@ abstract class DeserializerForDecompilerBase(val directoryPackageFqName: FqName)
     override fun resolveTopLevelClass(classId: ClassId) = deserializationComponents.deserializeClass(classId)
 
     protected fun createDummyPackageFragment(fqName: FqName): MutablePackageFragmentDescriptor =
-            MutablePackageFragmentDescriptor(moduleDescriptor, fqName)
+        MutablePackageFragmentDescriptor(moduleDescriptor, fqName)
 
     private fun createDummyModule(name: String) = ModuleDescriptorImpl(Name.special("<$name>"), storageManager, builtIns)
 

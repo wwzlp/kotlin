@@ -33,12 +33,12 @@ import org.jetbrains.kotlin.serialization.deserialization.*
 import org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedPackageMemberScope
 
 class KotlinMetadataDeserializerForDecompiler(
-        packageFqName: FqName,
-        private val proto: ProtoBuf.PackageFragment,
-        private val nameResolver: NameResolver,
-        override val targetPlatform: TargetPlatform,
-        serializerProtocol: SerializerExtensionProtocol,
-        flexibleTypeDeserializer: FlexibleTypeDeserializer
+    packageFqName: FqName,
+    private val proto: ProtoBuf.PackageFragment,
+    private val nameResolver: NameResolver,
+    override val targetPlatform: TargetPlatform,
+    serializerProtocol: SerializerExtensionProtocol,
+    flexibleTypeDeserializer: FlexibleTypeDeserializer
 ) : DeserializerForDecompilerBase(packageFqName) {
     override val builtIns: KotlinBuiltIns get() = DefaultBuiltIns.Instance
 
@@ -48,10 +48,10 @@ class KotlinMetadataDeserializerForDecompiler(
         val notFoundClasses = NotFoundClasses(storageManager, moduleDescriptor)
 
         deserializationComponents = DeserializationComponents(
-                storageManager, moduleDescriptor, DeserializationConfiguration.Default, ProtoBasedClassDataFinder(proto, nameResolver),
-                AnnotationAndConstantLoaderImpl(moduleDescriptor, notFoundClasses, serializerProtocol), packageFragmentProvider,
-                ResolveEverythingToKotlinAnyLocalClassifierResolver(builtIns), LoggingErrorReporter(LOG),
-                LookupTracker.DO_NOTHING, flexibleTypeDeserializer, emptyList(), notFoundClasses
+            storageManager, moduleDescriptor, DeserializationConfiguration.Default, ProtoBasedClassDataFinder(proto, nameResolver),
+            AnnotationAndConstantLoaderImpl(moduleDescriptor, notFoundClasses, serializerProtocol), packageFragmentProvider,
+            ResolveEverythingToKotlinAnyLocalClassifierResolver(builtIns), LoggingErrorReporter(LOG),
+            LookupTracker.DO_NOTHING, flexibleTypeDeserializer, emptyList(), notFoundClasses
         )
     }
 
@@ -61,8 +61,8 @@ class KotlinMetadataDeserializerForDecompiler(
         }
 
         val membersScope = DeserializedPackageMemberScope(
-                createDummyPackageFragment(facadeFqName), proto.`package`, nameResolver, containerSource = null,
-                components = deserializationComponents
+            createDummyPackageFragment(facadeFqName), proto.`package`, nameResolver, containerSource = null,
+            components = deserializationComponents
         ) { emptyList() }
 
         return membersScope.getContributedDescriptors().toList()

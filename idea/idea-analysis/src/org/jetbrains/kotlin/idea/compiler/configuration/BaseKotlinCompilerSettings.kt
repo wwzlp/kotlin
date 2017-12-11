@@ -73,12 +73,12 @@ abstract class BaseKotlinCompilerSettings<T : Freezable> protected constructor()
         const val KOTLIN_COMPILER_SETTINGS_PATH = PROJECT_CONFIG_DIR + "/" + SettingConstants.KOTLIN_COMPILER_SETTINGS_FILE
 
         private val SKIP_DEFAULT_VALUES = SkipDefaultValuesSerializationFilters(
-                CommonCompilerArguments.DummyImpl(),
-                K2JVMCompilerArguments(),
-                K2JSCompilerArguments().apply {
-                    sourceMapPrefix = ""
-                    sourceMapEmbedSources = K2JsArgumentConstants.SOURCE_MAP_SOURCE_CONTENT_INLINING
-                }
+            CommonCompilerArguments.DummyImpl(),
+            K2JVMCompilerArguments(),
+            K2JSCompilerArguments().apply {
+                sourceMapPrefix = ""
+                sourceMapEmbedSources = K2JsArgumentConstants.SOURCE_MAP_SOURCE_CONTENT_INLINING
+            }
         )
     }
 }

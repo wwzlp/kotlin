@@ -60,10 +60,10 @@ fun isKotlinInternalCompiledFile(file: VirtualFile, fileContent: ByteArray? = nu
     }
 
     val innerClass =
-            if (fileContent == null)
-                ClassFileViewProvider.isInnerClass(file)
-            else
-                ClassFileViewProvider.isInnerClass(file, fileContent)
+        if (fileContent == null)
+            ClassFileViewProvider.isInnerClass(file)
+        else
+            ClassFileViewProvider.isInnerClass(file, fileContent)
 
     if (innerClass) {
         return true
@@ -73,7 +73,7 @@ fun isKotlinInternalCompiledFile(file: VirtualFile, fileContent: ByteArray? = nu
     if (classId.isLocal) return true
 
     return header.kind == KotlinClassHeader.Kind.SYNTHETIC_CLASS ||
-           header.kind == KotlinClassHeader.Kind.MULTIFILE_CLASS_PART
+            header.kind == KotlinClassHeader.Kind.MULTIFILE_CLASS_PART
 }
 
 fun findMultifileClassParts(file: VirtualFile, classId: ClassId, header: KotlinClassHeader): List<KotlinJvmBinaryClass> {

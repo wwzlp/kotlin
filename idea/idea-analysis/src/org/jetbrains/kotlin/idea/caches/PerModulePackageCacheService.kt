@@ -44,31 +44,35 @@ import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import java.util.concurrent.ConcurrentMap
 
 class KotlinPackageContentModificationListener(
-        private val project: Project
+    private val project: Project
 ) {
     init {
         val connection = project.messageBus.connect()
 
-        connection.subscribe(VirtualFileManager.VFS_CHANGES, object : BulkFileListener {
-            override fun before(events: MutableList<out VFileEvent>) = onEvents(events) { it is VFileDeleteEvent || it is VFileMoveEvent }
-            override fun after(events: List<VFileEvent>) = onEvents(events) { it is VFileMoveEvent || it is VFileCreateEvent || it is VFileCopyEvent }
+        connection.subscribe(
+            VirtualFileManager.VFS_CHANGES, object : BulkFileListener {
+                override fun before(events: MutableList<out VFileEvent>) =
+                    onEvents(events) { it is VFileDeleteEvent || it is VFileMoveEvent }
 
-            fun onEvents(events: List<VFileEvent>, eventPredicate: (VFileEvent) -> Boolean) {
+                override fun after(events: List<VFileEvent>) =
+                    onEvents(events) { it is VFileMoveEvent || it is VFileCreateEvent || it is VFileCopyEvent }
 
-                val service = project.service<PerModulePackageCacheService>()
-                if (events.size >= FULL_DROP_THRESHOLD) {
-                    service.onTooComplexChange()
-                }
-                else {
-                    events
+                fun onEvents(events: List<VFileEvent>, eventPredicate: (VFileEvent) -> Boolean) {
+
+                    val service = project.service<PerModulePackageCacheService>()
+                    if (events.size >= FULL_DROP_THRESHOLD) {
+                        service.onTooComplexChange()
+                    } else {
+                        events
                             .asSequence()
                             .filter(eventPredicate)
                             .mapNotNull { it.file }
                             .filter { FileTypeRegistry.getInstance().getFileTypeByFileName(it.name) == KotlinFileType.INSTANCE }
                             .forEach { file -> service.notifyPackageChange(file) }
+                    }
                 }
             }
-        })
+        )
     }
 }
 
@@ -114,8 +118,7 @@ class PerModulePackageCacheService(private val project: Project) {
     internal fun notifyPackageChange(file: VirtualFile): Unit = synchronized(this) {
         if (file.isDirectory) {
             pendingDirectoryChanges += file
-        }
-        else if (file.parent != null && file.parent.isDirectory) {
+        } else if (file.parent != null && file.parent.isDirectory) {
             notifyPackageChange(file.parent)
         }
     }
@@ -131,8 +134,7 @@ class PerModulePackageCacheService(private val project: Project) {
     internal fun checkPendingChanges() = synchronized(this) {
         if (pendingDirectoryChanges.size + pendingKtFileChanges.size >= FULL_DROP_THRESHOLD) {
             onTooComplexChange()
-        }
-        else {
+        } else {
             pendingDirectoryChanges.forEach { vfile ->
                 if (vfile !in projectScope) return@forEach
                 (getModuleInfoByVirtualFile(project, vfile) as? ModuleSourceInfo)?.let { invalidateCacheForModule(it) }
@@ -157,11 +159,11 @@ class PerModulePackageCacheService(private val project: Project) {
         // disposing global cache entry
         val moduleOwnCache = module.getUserData(PerModulePackageCacheService.PER_MODULE_PACKAGE_CACHE) ?: run {
             ContainerUtil.createConcurrentSoftMap<ModuleInfo, Ref<ConcurrentMap<FqName, Boolean>>>()
-                    .apply { module.putUserData(PerModulePackageCacheService.PER_MODULE_PACKAGE_CACHE, this) }
+                .apply { module.putUserData(PerModulePackageCacheService.PER_MODULE_PACKAGE_CACHE, this) }
         }
         val cached = moduleOwnCache.getOrPut(moduleInfo) { cache.getOrPut(moduleInfo) { Ref() } }
-                .apply { if (isNull) set(ContainerUtil.createConcurrentSoftMap<FqName, Boolean>()) }
-                .get()
+            .apply { if (isNull) set(ContainerUtil.createConcurrentSoftMap<FqName, Boolean>()) }
+            .get()
 
 
         return cached.getOrPut(packageFqName) {
@@ -170,7 +172,8 @@ class PerModulePackageCacheService(private val project: Project) {
     }
 
     companion object {
-        private val PER_MODULE_PACKAGE_CACHE = Key.create<ConcurrentMap<ModuleInfo, Ref<ConcurrentMap<FqName, Boolean>>>>("per_module_package_cache")
+        private val PER_MODULE_PACKAGE_CACHE =
+            Key.create<ConcurrentMap<ModuleInfo, Ref<ConcurrentMap<FqName, Boolean>>>>("per_module_package_cache")
         val FULL_DROP_THRESHOLD = 1000
     }
 }

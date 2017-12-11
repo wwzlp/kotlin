@@ -24,8 +24,8 @@ class KotlinInternalMode {
 
         var enabled: Boolean
             get() = PropertiesComponent.getInstance()!!.getBoolean(
-                    INTERNAL_MODE_PROPERTY,
-                    System.getProperty(INTERNAL_MODE_PROPERTY) == "true"
+                INTERNAL_MODE_PROPERTY,
+                System.getProperty(INTERNAL_MODE_PROPERTY) == "true"
             )
             set(value) {
                 PropertiesComponent.getInstance()!!.setValue(INTERNAL_MODE_PROPERTY, value.toString())

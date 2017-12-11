@@ -22,9 +22,13 @@ import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.config.SettingConstants.KOTLIN_TO_JVM_COMPILER_ARGUMENTS_SECTION
 import org.jetbrains.kotlin.idea.compiler.configuration.BaseKotlinCompilerSettings.Companion.KOTLIN_COMPILER_SETTINGS_PATH
 
-@State(name = KOTLIN_TO_JVM_COMPILER_ARGUMENTS_SECTION,
-       storages = arrayOf(Storage(file = StoragePathMacros.PROJECT_FILE),
-                          Storage(file = KOTLIN_COMPILER_SETTINGS_PATH, scheme = StorageScheme.DIRECTORY_BASED)))
+@State(
+    name = KOTLIN_TO_JVM_COMPILER_ARGUMENTS_SECTION,
+    storages = arrayOf(
+        Storage(file = StoragePathMacros.PROJECT_FILE),
+        Storage(file = KOTLIN_COMPILER_SETTINGS_PATH, scheme = StorageScheme.DIRECTORY_BASED)
+    )
+)
 class Kotlin2JvmCompilerArgumentsHolder : BaseKotlinCompilerSettings<K2JVMCompilerArguments>() {
     override fun createSettings() = K2JVMCompilerArguments()
 

@@ -43,47 +43,53 @@ class LibraryModificationTracker(project: Project) : SimpleModificationTracker()
 
     init {
         val connection = project.messageBus.connect()
-        connection.subscribe(VirtualFileManager.VFS_CHANGES, object : BulkFileListener.Adapter() {
-            override fun after(events: List<VFileEvent>) {
-                events.filter(::isRelevantEvent).let { createEvents ->
-                    if (createEvents.isNotEmpty()) {
-                        ApplicationManager.getApplication().invokeLater {
-                            if (!project.isDisposed) {
-                                processBulk(createEvents) {
-                                    projectFileIndex.isInLibraryClasses(it) || isLibraryArchiveRoot(it)
+        connection.subscribe(
+            VirtualFileManager.VFS_CHANGES, object : BulkFileListener.Adapter() {
+                override fun after(events: List<VFileEvent>) {
+                    events.filter(::isRelevantEvent).let { createEvents ->
+                        if (createEvents.isNotEmpty()) {
+                            ApplicationManager.getApplication().invokeLater {
+                                if (!project.isDisposed) {
+                                    processBulk(createEvents) {
+                                        projectFileIndex.isInLibraryClasses(it) || isLibraryArchiveRoot(it)
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            override fun before(events: List<VFileEvent>) {
-                processBulk(events) {
-                    projectFileIndex.isInLibraryClasses(it)
+                override fun before(events: List<VFileEvent>) {
+                    processBulk(events) {
+                        projectFileIndex.isInLibraryClasses(it)
+                    }
                 }
             }
-        })
+        )
 
-        connection.subscribe(DumbService.DUMB_MODE, object : DumbService.DumbModeListener {
-            override fun enteredDumbMode() {
-                incModificationCount()
-            }
+        connection.subscribe(
+            DumbService.DUMB_MODE, object : DumbService.DumbModeListener {
+                override fun enteredDumbMode() {
+                    incModificationCount()
+                }
 
-            override fun exitDumbMode() {
-                incModificationCount()
+                override fun exitDumbMode() {
+                    incModificationCount()
+                }
             }
-        })
+        )
 
-        connection.subscribe(FileTypeManager.TOPIC, object : FileTypeListener {
-            override fun beforeFileTypesChanged(event: FileTypeEvent) {
-                incModificationCount()
-            }
+        connection.subscribe(
+            FileTypeManager.TOPIC, object : FileTypeListener {
+                override fun beforeFileTypesChanged(event: FileTypeEvent) {
+                    incModificationCount()
+                }
 
-            override fun fileTypesChanged(event: FileTypeEvent) {
-                incModificationCount()
+                override fun fileTypesChanged(event: FileTypeEvent) {
+                    incModificationCount()
+                }
             }
-        })
+        )
     }
 
     private val projectFileIndex = ProjectFileIndex.SERVICE.getInstance(project)
@@ -109,4 +115,5 @@ class LibraryModificationTracker(project: Project) : SimpleModificationTracker()
     }
 }
 
-private fun isRelevantEvent(vFileEvent: VFileEvent) = vFileEvent is VFileCreateEvent || vFileEvent is VFileMoveEvent || vFileEvent is VFileCopyEvent
+private fun isRelevantEvent(vFileEvent: VFileEvent) =
+    vFileEvent is VFileCreateEvent || vFileEvent is VFileMoveEvent || vFileEvent is VFileCopyEvent

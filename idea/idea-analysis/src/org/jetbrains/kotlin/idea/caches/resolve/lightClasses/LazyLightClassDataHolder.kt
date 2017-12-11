@@ -36,9 +36,9 @@ typealias ExactLightClassContextProvider = () -> LightClassConstructionContext
 typealias DummyLightClassContextProvider = (() -> LightClassConstructionContext?)?
 
 sealed class LazyLightClassDataHolder(
-        builder: LightClassBuilder,
-        exactContextProvider: ExactLightClassContextProvider,
-        dummyContextProvider: DummyLightClassContextProvider
+    builder: LightClassBuilder,
+    exactContextProvider: ExactLightClassContextProvider,
+    dummyContextProvider: DummyLightClassContextProvider
 ) : LightClassDataHolder {
 
     private val exactResultLazyValue = lazyPub { builder(exactContextProvider()) }
@@ -57,29 +57,35 @@ sealed class LazyLightClassDataHolder(
 
     // for facade or defaultImpls
     override fun findData(findDelegate: (PsiJavaFileStub) -> PsiClass): LightClassData =
-            LazyLightClassData { lightClassBuilderResult ->
-                findDelegate(lightClassBuilderResult.stub)
-            }
+        LazyLightClassData { lightClassBuilderResult ->
+            findDelegate(lightClassBuilderResult.stub)
+        }
 
     class ForClass(
-            builder: LightClassBuilder, exactContextProvider: ExactLightClassContextProvider, dummyContextProvider: DummyLightClassContextProvider
+        builder: LightClassBuilder,
+        exactContextProvider: ExactLightClassContextProvider,
+        dummyContextProvider: DummyLightClassContextProvider
     ) : LazyLightClassDataHolder(builder, exactContextProvider, dummyContextProvider), LightClassDataHolder.ForClass {
         override fun findDataForClassOrObject(classOrObject: KtClassOrObject): LightClassData =
-                LazyLightClassData { lightClassBuilderResult ->
-                    lightClassBuilderResult.stub.findDelegate(classOrObject)
-                }
+            LazyLightClassData { lightClassBuilderResult ->
+                lightClassBuilderResult.stub.findDelegate(classOrObject)
+            }
     }
 
     class ForFacade(
-            builder: LightClassBuilder, exactContextProvider: ExactLightClassContextProvider, dummyContextProvider: DummyLightClassContextProvider
+        builder: LightClassBuilder,
+        exactContextProvider: ExactLightClassContextProvider,
+        dummyContextProvider: DummyLightClassContextProvider
     ) : LazyLightClassDataHolder(builder, exactContextProvider, dummyContextProvider), LightClassDataHolder.ForFacade
 
     class ForScript(
-            builder: LightClassBuilder, exactContextProvider: ExactLightClassContextProvider, dummyContextProvider: DummyLightClassContextProvider
+        builder: LightClassBuilder,
+        exactContextProvider: ExactLightClassContextProvider,
+        dummyContextProvider: DummyLightClassContextProvider
     ) : LazyLightClassDataHolder(builder, exactContextProvider, dummyContextProvider), LightClassDataHolder.ForScript
 
     private inner class LazyLightClassData(
-            findDelegate: (LightClassBuilderResult) -> PsiClass
+        findDelegate: (LightClassBuilderResult) -> PsiClass
     ) : LightClassData {
         override val clsDelegate: PsiClass by lazyPub { findDelegate(exactResult) }
 
@@ -115,7 +121,7 @@ sealed class LazyLightClassDataHolder(
                        Resulting light member is not consistent in this case, so this should happen only for erroneous code
                     */
                     val exactDelegateMethod = clsDelegate.findMethodsByName(dummyMethod.name, false).firstOrNull(byMemberIndex)
-                                              ?: clsDelegate.methods.firstOrNull(byMemberIndex)
+                            ?: clsDelegate.methods.firstOrNull(byMemberIndex)
                     exactDelegateMethod.assertMatches(dummyMethod, containingClass)
                 }
             }
@@ -135,19 +141,18 @@ sealed class LazyLightClassDataHolder(
     }
 }
 
-private sealed class LazyLightClassMemberMatchingError(message: String, containingClass: KtLightClass)
-    : AssertionError(message) {
+private sealed class LazyLightClassMemberMatchingError(message: String, containingClass: KtLightClass) : AssertionError(message) {
 
     init {
         containingClass.kotlinOrigin?.hasLightClassMatchingErrors = true
     }
 
     class NoMatch(dummyMember: PsiMember, containingClass: KtLightClass) : LazyLightClassMemberMatchingError(
-            "Couldn't match ${dummyMember.debugName} in $containingClass", containingClass
+        "Couldn't match ${dummyMember.debugName} in $containingClass", containingClass
     )
 
     class WrongMatch(realMember: PsiMember, dummyMember: PsiMember, containingClass: KtLightClass) : LazyLightClassMemberMatchingError(
-            "Matched ${dummyMember.debugName} to ${realMember.debugName} in $containingClass", containingClass
+        "Matched ${dummyMember.debugName} to ${realMember.debugName} in $containingClass", containingClass
     )
 }
 

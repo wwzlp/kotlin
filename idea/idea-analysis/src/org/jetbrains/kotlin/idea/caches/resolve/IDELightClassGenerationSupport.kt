@@ -54,16 +54,15 @@ class IDELightClassGenerationSupport(private val project: Project) : LightClassG
     override fun createDataHolderForClass(classOrObject: KtClassOrObject, builder: LightClassBuilder): LightClassDataHolder.ForClass {
         return if (classOrObject.isLocal) {
             LazyLightClassDataHolder.ForClass(
-                    builder,
-                    exactContextProvider = { IDELightClassContexts.contextForLocalClassOrObject(classOrObject) },
-                    dummyContextProvider = null
+                builder,
+                exactContextProvider = { IDELightClassContexts.contextForLocalClassOrObject(classOrObject) },
+                dummyContextProvider = null
             )
-        }
-        else {
+        } else {
             LazyLightClassDataHolder.ForClass(
-                    builder,
-                    exactContextProvider = { IDELightClassContexts.contextForNonLocalClassOrObject(classOrObject) },
-                    dummyContextProvider = { IDELightClassContexts.lightContextForClassOrObject(classOrObject) }
+                builder,
+                exactContextProvider = { IDELightClassContexts.contextForNonLocalClassOrObject(classOrObject) },
+                dummyContextProvider = { IDELightClassContexts.lightContextForClassOrObject(classOrObject) }
             )
         }
     }
@@ -75,17 +74,17 @@ class IDELightClassGenerationSupport(private val project: Project) : LightClassG
         val sortedFiles = files.sortedWith(scopeFileComparator)
 
         return LazyLightClassDataHolder.ForFacade(
-                builder,
-                exactContextProvider = { IDELightClassContexts.contextForFacade(sortedFiles) },
-                dummyContextProvider = { IDELightClassContexts.lightContextForFacade(sortedFiles) }
+            builder,
+            exactContextProvider = { IDELightClassContexts.contextForFacade(sortedFiles) },
+            dummyContextProvider = { IDELightClassContexts.lightContextForFacade(sortedFiles) }
         )
     }
 
     override fun createDataHolderForScript(script: KtScript, builder: LightClassBuilder): LightClassDataHolder.ForScript {
         return LazyLightClassDataHolder.ForScript(
-                builder,
-                exactContextProvider = { IDELightClassContexts.contextForScript(script) },
-                dummyContextProvider = { IDELightClassContexts.lightContextForScript(script) }
+            builder,
+            exactContextProvider = { IDELightClassContexts.contextForScript(script) },
+            dummyContextProvider = { IDELightClassContexts.lightContextForScript(script) }
         )
     }
 
@@ -102,11 +101,12 @@ class IDELightClassGenerationSupport(private val project: Project) : LightClassG
     }
 
     override fun findClassOrObjectDeclarationsInPackage(
-            packageFqName: FqName,
-            searchScope: GlobalSearchScope
+        packageFqName: FqName,
+        searchScope: GlobalSearchScope
     ): Collection<KtClassOrObject> {
         return KotlinTopLevelClassByPackageIndex.getInstance().get(
-                packageFqName.asString(), project, sourceAndClassFiles(searchScope, project))
+            packageFqName.asString(), project, sourceAndClassFiles(searchScope, project)
+        )
     }
 
     override fun packageExists(fqName: FqName, scope: GlobalSearchScope): Boolean {
@@ -130,7 +130,7 @@ class IDELightClassGenerationSupport(private val project: Project) : LightClassG
             }
         }
         if ((classOrObject.containingFile as? KtFile)?.analysisContext != null ||
-            classOrObject.containingFile.originalFile.virtualFile != null) {
+                classOrObject.containingFile.originalFile.virtualFile != null) {
             // explicit request to create light class from dummy.kt
             return KtLightClassForSourceDeclaration.create(classOrObject)
         }
@@ -140,17 +140,19 @@ class IDELightClassGenerationSupport(private val project: Project) : LightClassG
     override fun getLightClassForScript(script: KtScript): KtLightClassForScript? = KtLightClassForScript.create(script)
 
     private fun withFakeLightClasses(
-            lightClassForFacade: KtLightClassForFacade?,
-            facadeFiles: List<KtFile>
+        lightClassForFacade: KtLightClassForFacade?,
+        facadeFiles: List<KtFile>
     ): List<PsiClass> {
         if (lightClassForFacade == null) return emptyList()
 
         val lightClasses = ArrayList<PsiClass>()
         lightClasses.add(lightClassForFacade)
         if (facadeFiles.size > 1) {
-            lightClasses.addAll(facadeFiles.map {
-                FakeLightClassForFileOfPackage(lightClassForFacade, it)
-            })
+            lightClasses.addAll(
+                facadeFiles.map {
+                    FakeLightClassForFileOfPackage(lightClassForFacade, it)
+                }
+            )
         }
         return lightClasses
     }
@@ -185,8 +187,7 @@ class IDELightClassGenerationSupport(private val project: Project) : LightClassG
                 val partClassFile = facadeKtFile.virtualFile.parent.findChild(partClassFileShortName) ?: return@mapNotNull null
                 val javaClsClass = createClsJavaClassFromVirtualFile(facadeKtFile, partClassFile, null) ?: return@mapNotNull null
                 KtLightClassForDecompiledDeclaration(javaClsClass, null, facadeKtFile)
-            }
-            else {
+            } else {
                 // TODO should we build light classes for parts from source?
                 null
             }
@@ -198,16 +199,16 @@ class IDELightClassGenerationSupport(private val project: Project) : LightClassG
     }
 
     fun createLightClassForFileFacade(
-            facadeFqName: FqName,
-            facadeFiles: List<KtFile>,
-            moduleInfo: IdeaModuleInfo
+        facadeFqName: FqName,
+        facadeFiles: List<KtFile>,
+        moduleInfo: IdeaModuleInfo
     ): List<PsiClass> {
         return if (moduleInfo is ModuleSourceInfo) {
             val lightClassForFacade = KtLightClassForFacade.createForFacade(
-                    psiManager, facadeFqName, moduleInfo.contentScope(), facadeFiles)
+                psiManager, facadeFqName, moduleInfo.contentScope(), facadeFiles
+            )
             withFakeLightClasses(lightClassForFacade, facadeFiles)
-        }
-        else {
+        } else {
             facadeFiles.filterIsInstance<KtClsFile>().mapNotNull { createLightClassForDecompiledKotlinFile(it) }
         }
     }
@@ -221,8 +222,7 @@ class IDELightClassGenerationSupport(private val project: Project) : LightClassG
     override fun resolveToDescriptor(declaration: KtDeclaration): DeclarationDescriptor? {
         try {
             return declaration.resolveToDescriptorIfAny(BodyResolveMode.FULL)
-        }
-        catch (e: NoDescriptorForDeclarationException) {
+        } catch (e: NoDescriptorForDeclarationException) {
             return null
         }
     }
@@ -264,8 +264,8 @@ class IDELightClassGenerationSupport(private val project: Project) : LightClassG
     }
 
     private fun findCorrespondingLightClass(
-            decompiledClassOrObject: KtClassOrObject,
-            rootLightClassForDecompiledFile: KtLightClassForDecompiledDeclaration
+        decompiledClassOrObject: KtClassOrObject,
+        rootLightClassForDecompiledFile: KtLightClassForDecompiledDeclaration
     ): KtLightClassForDecompiledDeclaration {
         val relativeFqName = getClassRelativeName(decompiledClassOrObject)
         val iterator = relativeFqName.pathSegments().iterator()
@@ -298,17 +298,17 @@ class IDELightClassGenerationSupport(private val project: Project) : LightClassG
         val classOrObject = file.declarations.filterIsInstance<KtClassOrObject>().singleOrNull()
 
         val javaClsClass = createClsJavaClassFromVirtualFile(
-                file, virtualFile,
-                correspondingClassOrObject = classOrObject
+            file, virtualFile,
+            correspondingClassOrObject = classOrObject
         ) ?: return null
 
         return KtLightClassForDecompiledDeclaration(javaClsClass, classOrObject, file)
     }
 
     private fun createClsJavaClassFromVirtualFile(
-            mirrorFile: KtFile,
-            classFile: VirtualFile,
-            correspondingClassOrObject: KtClassOrObject?
+        mirrorFile: KtFile,
+        classFile: VirtualFile,
+        correspondingClassOrObject: KtClassOrObject?
     ): ClsClassImpl? {
         val javaFileStub = ClsJavaStubByVirtualFileCache.getInstance(project).get(classFile) ?: return null
         javaFileStub.psiFactory = ClsWrapperStubPsiFactory.INSTANCE
@@ -354,7 +354,8 @@ class KtFileClassProviderImpl(val lightClassGenerationSupport: LightClassGenerat
 
             file.hasTopLevelCallables() ->
                 (lightClassGenerationSupport as IDELightClassGenerationSupport).createLightClassForFileFacade(
-                        fileClassFqName, listOf(file), moduleInfo)
+                    fileClassFqName, listOf(file), moduleInfo
+                )
 
             else -> emptyList<PsiClass>()
         }

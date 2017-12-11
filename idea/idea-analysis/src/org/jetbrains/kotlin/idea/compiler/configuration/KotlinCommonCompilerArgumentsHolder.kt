@@ -25,10 +25,16 @@ import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.config.SettingConstants.KOTLIN_COMMON_COMPILER_ARGUMENTS_SECTION
 import org.jetbrains.kotlin.config.getOption
 
-@State(name = KOTLIN_COMMON_COMPILER_ARGUMENTS_SECTION,
-       storages = arrayOf(Storage(file = StoragePathMacros.PROJECT_FILE),
-                          Storage(file = BaseKotlinCompilerSettings.KOTLIN_COMPILER_SETTINGS_PATH,
-                                  scheme = StorageScheme.DIRECTORY_BASED)))
+@State(
+    name = KOTLIN_COMMON_COMPILER_ARGUMENTS_SECTION,
+    storages = arrayOf(
+        Storage(file = StoragePathMacros.PROJECT_FILE),
+        Storage(
+            file = BaseKotlinCompilerSettings.KOTLIN_COMPILER_SETTINGS_PATH,
+            scheme = StorageScheme.DIRECTORY_BASED
+        )
+    )
+)
 class KotlinCommonCompilerArgumentsHolder : BaseKotlinCompilerSettings<CommonCompilerArguments>() {
     private fun Element.dropElementIfDefault() {
         if (DEFAULT_LANGUAGE_VERSION == getAttribute("value")?.value) {
@@ -61,6 +67,6 @@ class KotlinCommonCompilerArgumentsHolder : BaseKotlinCompilerSettings<CommonCom
         private val DEFAULT_LANGUAGE_VERSION = LanguageVersion.LATEST_STABLE.versionString
 
         fun getInstance(project: Project) =
-                ServiceManager.getService<KotlinCommonCompilerArgumentsHolder>(project, KotlinCommonCompilerArgumentsHolder::class.java)!!
+            ServiceManager.getService<KotlinCommonCompilerArgumentsHolder>(project, KotlinCommonCompilerArgumentsHolder::class.java)!!
     }
 }

@@ -39,13 +39,13 @@ import org.jetbrains.kotlin.utils.addIfNotNull
 import java.io.IOException
 
 abstract class KotlinMetadataDecompiler<out V : BinaryVersion>(
-        private val fileType: FileType,
-        private val targetPlatform: TargetPlatform,
-        private val serializerProtocol: SerializerExtensionProtocol,
-        private val flexibleTypeDeserializer: FlexibleTypeDeserializer,
-        private val expectedBinaryVersion: V,
-        private val invalidBinaryVersion: V,
-        stubVersion: Int
+    private val fileType: FileType,
+    private val targetPlatform: TargetPlatform,
+    private val serializerProtocol: SerializerExtensionProtocol,
+    private val flexibleTypeDeserializer: FlexibleTypeDeserializer,
+    private val expectedBinaryVersion: V,
+    private val invalidBinaryVersion: V,
+    stubVersion: Int
 ) : ClassFileDecompilers.Full() {
     private val stubBuilder = KotlinMetadataStubBuilder(stubVersion, fileType, serializerProtocol, this::readFile)
 
@@ -61,8 +61,7 @@ abstract class KotlinMetadataDecompiler<out V : BinaryVersion>(
         return KotlinDecompiledFileViewProvider(manager, file, physical) { provider ->
             if (readFile(provider.virtualFile) == null) {
                 null
-            }
-            else {
+            } else {
                 KtDecompiledFile(provider, this::buildDecompiledText)
             }
         }
@@ -73,8 +72,7 @@ abstract class KotlinMetadataDecompiler<out V : BinaryVersion>(
 
         return try {
             readFile(file.contentsToByteArray(false), file)
-        }
-        catch (e: IOException) {
+        } catch (e: IOException) {
             // This is needed because sometimes we're given VirtualFile instances that point to non-existent .jar entries.
             // Such files are valid (isValid() returns true), but an attempt to read their contents results in a FileNotFoundException.
             // Note that although calling "refresh()" instead of catching an exception would seem more correct here,
@@ -100,8 +98,8 @@ abstract class KotlinMetadataDecompiler<out V : BinaryVersion>(
             is FileWithMetadata.Compatible -> {
                 val packageFqName = file.packageFqName
                 val resolver = KotlinMetadataDeserializerForDecompiler(
-                        packageFqName, file.proto, file.nameResolver,
-                        targetPlatform, serializerProtocol, flexibleTypeDeserializer
+                    packageFqName, file.proto, file.nameResolver,
+                    targetPlatform, serializerProtocol, flexibleTypeDeserializer
                 )
                 val declarations = arrayListOf<DeclarationDescriptor>()
                 declarations.addAll(resolver.resolveDeclarationsInFacade(packageFqName))
@@ -119,16 +117,16 @@ sealed class FileWithMetadata {
     class Incompatible(val version: BinaryVersion) : FileWithMetadata()
 
     open class Compatible(
-            val proto: ProtoBuf.PackageFragment,
-            serializerProtocol: SerializerExtensionProtocol
+        val proto: ProtoBuf.PackageFragment,
+        serializerProtocol: SerializerExtensionProtocol
     ) : FileWithMetadata() {
         val nameResolver = NameResolverImpl(proto.strings, proto.qualifiedNames)
         val packageFqName = nameResolver.getPackageFqName(proto.`package`.getExtension(serializerProtocol.packageFqName))
 
         open val classesToDecompile: List<ProtoBuf.Class> =
-                proto.class_List.filter { proto ->
-                    val classId = nameResolver.getClassId(proto.fqName)
-                    !classId.isNestedClass && classId !in ClassDeserializer.BLACK_LIST
-                }
+            proto.class_List.filter { proto ->
+                val classId = nameResolver.getClassId(proto.fqName)
+                !classId.isNestedClass && classId !in ClassDeserializer.BLACK_LIST
+            }
     }
 }

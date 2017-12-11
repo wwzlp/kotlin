@@ -43,10 +43,10 @@ fun DescriptorRendererOptions.defaultDecompilerRendererOptions() {
 }
 
 fun buildDecompiledText(
-        packageFqName: FqName,
-        descriptors: List<DeclarationDescriptor>,
-        descriptorRenderer: DescriptorRenderer,
-        indexers: Collection<DecompiledTextIndexer<*>> = listOf(ByDescriptorIndexer)
+    packageFqName: FqName,
+    descriptors: List<DeclarationDescriptor>,
+    descriptorRenderer: DescriptorRenderer,
+    indexers: Collection<DecompiledTextIndexer<*>> = listOf(ByDescriptorIndexer)
 ): DecompiledText {
     val builder = StringBuilder()
 
@@ -73,8 +73,7 @@ fun buildDecompiledText(
             }
             builder.append(descriptor.name.asString())
             builder.append(if (lastEnumEntry!!) ";" else ",")
-        }
-        else {
+        } else {
             builder.append(descriptorRenderer.render(descriptor).replace("= ...", DECOMPILED_COMMENT_FOR_PARAMETER))
         }
         var endOffset = builder.length
@@ -90,15 +89,13 @@ fun buildDecompiledText(
             if ((descriptor as MemberDescriptor).modality != Modality.ABSTRACT) {
                 if (descriptor is FunctionDescriptor) {
                     builder.append(" { ").append(DECOMPILED_CODE_COMMENT).append(" }")
-                }
-                else {
+                } else {
                     // descriptor instanceof PropertyDescriptor
                     builder.append(" ").append(DECOMPILED_CODE_COMMENT)
                 }
                 endOffset = builder.length
             }
-        }
-        else if (descriptor is ClassDescriptor && !isEnumEntry(descriptor)) {
+        } else if (descriptor is ClassDescriptor && !isEnumEntry(descriptor)) {
             builder.append(" {\n")
 
             val subindent = indent + "    "
@@ -107,8 +104,7 @@ fun buildDecompiledText(
             fun newlineExceptFirst() {
                 if (firstPassed) {
                     builder.append("\n")
-                }
-                else {
+                } else {
                     firstPassed = true
                 }
             }
@@ -137,9 +133,9 @@ fun buildDecompiledText(
                     continue
                 }
                 if (member is CallableMemberDescriptor
-                    && member.kind != CallableMemberDescriptor.Kind.DECLARATION
-                    //TODO: not synthesized and component like
-                    && !DataClassDescriptorResolver.isComponentLike(member.name)) {
+                        && member.kind != CallableMemberDescriptor.Kind.DECLARATION
+                        //TODO: not synthesized and component like
+                        && !DataClassDescriptorResolver.isComponentLike(member.name)) {
                     continue
                 }
                 newlineExceptFirst()

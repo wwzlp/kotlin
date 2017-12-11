@@ -40,8 +40,8 @@ interface DelayedRefactoringRequest
 
 class ShorteningRequest(val pointer: SmartPsiElementPointer<KtElement>, val options: Options) : DelayedRefactoringRequest
 class ImportRequest(
-        val elementToImportPointer: SmartPsiElementPointer<PsiElement>,
-        val filePointer: SmartPsiElementPointer<KtFile>
+    val elementToImportPointer: SmartPsiElementPointer<PsiElement>,
+    val filePointer: SmartPsiElementPointer<KtFile>
 ) : DelayedRefactoringRequest
 
 private var Project.delayedRefactoringRequests: MutableSet<DelayedRefactoringRequest>?

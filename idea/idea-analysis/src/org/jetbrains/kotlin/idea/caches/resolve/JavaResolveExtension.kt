@@ -91,15 +91,14 @@ fun PsiParameter.getParameterDescriptor(resolutionFacade: ResolutionFacade? = nu
 }
 
 fun PsiClass.resolveToDescriptor(
-        resolutionFacade: ResolutionFacade,
-        declarationTranslator: (KtClassOrObject) -> KtClassOrObject? = { it }
+    resolutionFacade: ResolutionFacade,
+    declarationTranslator: (KtClassOrObject) -> KtClassOrObject? = { it }
 ): ClassDescriptor? {
     return if (this is KtLightClass && this !is KtLightClassForDecompiledDeclaration) {
         val origin = this.kotlinOrigin ?: return null
         val declaration = declarationTranslator(origin) ?: return null
         resolutionFacade.resolveToDescriptor(declaration)
-    }
-    else {
+    } else {
         getJavaClassDescriptor(resolutionFacade)
     } as? ClassDescriptor
 }
@@ -107,8 +106,7 @@ fun PsiClass.resolveToDescriptor(
 private fun PsiElement.getJavaDescriptorResolver(resolutionFacade: ResolutionFacade?): JavaDescriptorResolver? {
     if (resolutionFacade != null) {
         return resolutionFacade.tryGetFrontendService(this, JavaDescriptorResolver::class.java)
-    }
-    else {
+    } else {
         //TODO_R: should this work in scripts?
         if (!ProjectRootsUtil.isInProjectOrLibraryClassFile(this)) return null
 

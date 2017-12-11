@@ -29,9 +29,9 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtClassOrObject
 
 class KtLightClassForDecompiledDeclaration(
-        override val clsDelegate: ClsClassImpl,
-        override val kotlinOrigin: KtClassOrObject?,
-        private val file: KtClsFile
+    override val clsDelegate: ClsClassImpl,
+    override val kotlinOrigin: KtClassOrObject?,
+    private val file: KtClsFile
 ) : KtLightClassBase(clsDelegate.manager) {
     val fqName = kotlinOrigin?.fqName ?: FqName(clsDelegate.qualifiedName)
 
@@ -40,8 +40,10 @@ class KtLightClassForDecompiledDeclaration(
     override fun getOwnInnerClasses(): List<PsiClass> {
         val nestedClasses = kotlinOrigin?.declarations?.filterIsInstance<KtClassOrObject>() ?: emptyList()
         return clsDelegate.ownInnerClasses.map { innerClsClass ->
-            KtLightClassForDecompiledDeclaration(innerClsClass as ClsClassImpl,
-                                                 nestedClasses.firstOrNull { innerClsClass.name == it.name }, file)
+            KtLightClassForDecompiledDeclaration(
+                innerClsClass as ClsClassImpl,
+                nestedClasses.firstOrNull { innerClsClass.name == it.name }, file
+            )
         }
     }
 
@@ -58,11 +60,11 @@ class KtLightClassForDecompiledDeclaration(
     override fun getParent() = clsDelegate.parent
 
     override fun equals(other: Any?): Boolean =
-            other is KtLightClassForDecompiledDeclaration &&
-            fqName == other.fqName
+        other is KtLightClassForDecompiledDeclaration &&
+                fqName == other.fqName
 
     override fun hashCode(): Int =
-            fqName.hashCode()
+        fqName.hashCode()
 
     override val originKind: LightClassOriginKind
         get() = LightClassOriginKind.BINARY

@@ -43,31 +43,31 @@ import org.jetbrains.kotlin.serialization.deserialization.TypeTable
 import org.jetbrains.kotlin.serialization.deserialization.supertypes
 
 fun createClassStub(
-        parent: StubElement<out PsiElement>,
-        classProto: ProtoBuf.Class,
-        nameResolver: NameResolver,
-        classId: ClassId,
-        source: SourceElement?,
-        context: ClsStubBuilderContext
+    parent: StubElement<out PsiElement>,
+    classProto: ProtoBuf.Class,
+    nameResolver: NameResolver,
+    classId: ClassId,
+    source: SourceElement?,
+    context: ClsStubBuilderContext
 ) {
     ClassClsStubBuilder(parent, classProto, nameResolver, classId, source, context).build()
 }
 
 private class ClassClsStubBuilder(
-        private val parentStub: StubElement<out PsiElement>,
-        private val classProto: ProtoBuf.Class,
-        nameResolver: NameResolver,
-        private val classId: ClassId,
-        source: SourceElement?,
-        outerContext: ClsStubBuilderContext
+    private val parentStub: StubElement<out PsiElement>,
+    private val classProto: ProtoBuf.Class,
+    nameResolver: NameResolver,
+    private val classId: ClassId,
+    source: SourceElement?,
+    outerContext: ClsStubBuilderContext
 ) {
     private val thisAsProtoContainer = ProtoContainer.Class(
-            classProto, nameResolver, TypeTable(classProto.typeTable), source, outerContext.protoContainer
+        classProto, nameResolver, TypeTable(classProto.typeTable), source, outerContext.protoContainer
     )
     private val classKind = thisAsProtoContainer.kind
 
     private val c = outerContext.child(
-            classProto.typeParameterList, classId.shortClassName, nameResolver, thisAsProtoContainer.typeTable, thisAsProtoContainer
+        classProto.typeParameterList, classId.shortClassName, nameResolver, thisAsProtoContainer.typeTable, thisAsProtoContainer
     )
     private val typeStubBuilder = TypeClsStubBuilder(c)
     private val supertypeIds = run {
@@ -75,14 +75,13 @@ private class ClassClsStubBuilder(
         //empty supertype list if single supertype is Any
         if (supertypeIds.singleOrNull()?.let { KotlinBuiltIns.FQ_NAMES.any == it.asSingleFqName().toUnsafe() } ?: false) {
             listOf()
-        }
-        else {
+        } else {
             supertypeIds
         }
     }
 
     private val companionObjectName =
-            if (classProto.hasCompanionObjectName()) c.nameResolver.getName(classProto.companionObjectName) else null
+        if (classProto.hasCompanionObjectName()) c.nameResolver.getName(classProto.companionObjectName) else null
 
     private val classOrObjectStub = createClassOrObjectStubAndModifierListStub()
 
@@ -131,24 +130,24 @@ private class ClassClsStubBuilder(
         return when (classKind) {
             ProtoBuf.Class.Kind.OBJECT, ProtoBuf.Class.Kind.COMPANION_OBJECT -> {
                 KotlinObjectStubImpl(
-                        parentStub, shortName, fqName, superTypeRefs,
-                        isTopLevel = !classId.isNestedClass,
-                        isDefault = isCompanionObject,
-                        isLocal = false,
-                        isObjectLiteral = false
+                    parentStub, shortName, fqName, superTypeRefs,
+                    isTopLevel = !classId.isNestedClass,
+                    isDefault = isCompanionObject,
+                    isLocal = false,
+                    isObjectLiteral = false
                 )
             }
             else -> {
                 KotlinClassStubImpl(
-                        KtClassElementType.getStubType(classKind == ProtoBuf.Class.Kind.ENUM_ENTRY),
-                        parentStub,
-                        fqName.ref(),
-                        shortName,
-                        superTypeRefs,
-                        isInterface = classKind == ProtoBuf.Class.Kind.INTERFACE,
-                        isEnumEntry = classKind == ProtoBuf.Class.Kind.ENUM_ENTRY,
-                        isLocal = false,
-                        isTopLevel = !classId.isNestedClass
+                    KtClassElementType.getStubType(classKind == ProtoBuf.Class.Kind.ENUM_ENTRY),
+                    parentStub,
+                    fqName.ref(),
+                    shortName,
+                    superTypeRefs,
+                    isInterface = classKind == ProtoBuf.Class.Kind.INTERFACE,
+                    isEnumEntry = classKind == ProtoBuf.Class.Kind.ENUM_ENTRY,
+                    isLocal = false,
+                    isTopLevel = !classId.isNestedClass
                 )
             }
         }
@@ -167,11 +166,11 @@ private class ClassClsStubBuilder(
         if (supertypeIds.isEmpty()) return
 
         val delegationSpecifierListStub =
-                KotlinPlaceHolderStubImpl<KtSuperTypeList>(classOrObjectStub, KtStubElementTypes.SUPER_TYPE_LIST)
+            KotlinPlaceHolderStubImpl<KtSuperTypeList>(classOrObjectStub, KtStubElementTypes.SUPER_TYPE_LIST)
 
         classProto.supertypes(c.typeTable).forEach { type ->
             val superClassStub = KotlinPlaceHolderStubImpl<KtSuperTypeEntry>(
-                    delegationSpecifierListStub, KtStubElementTypes.SUPER_TYPE_ENTRY
+                delegationSpecifierListStub, KtStubElementTypes.SUPER_TYPE_ENTRY
             )
             typeStubBuilder.createTypeReferenceStub(superClassStub, type)
         }
@@ -201,15 +200,15 @@ private class ClassClsStubBuilder(
             val name = c.nameResolver.getName(entry.name)
             val annotations = c.components.annotationLoader.loadEnumEntryAnnotations(thisAsProtoContainer, entry)
             val enumEntryStub = KotlinClassStubImpl(
-                    KtStubElementTypes.ENUM_ENTRY,
-                    classBody,
-                    qualifiedName = c.containerFqName.child(name).ref(),
-                    name = name.ref(),
-                    superNames = arrayOf(),
-                    isInterface = false,
-                    isEnumEntry = true,
-                    isLocal = false,
-                    isTopLevel = false
+                KtStubElementTypes.ENUM_ENTRY,
+                classBody,
+                qualifiedName = c.containerFqName.child(name).ref(),
+                name = name.ref(),
+                superNames = arrayOf(),
+                isInterface = false,
+                isEnumEntry = true,
+                isLocal = false,
+                isTopLevel = false
             )
             if (annotations.isNotEmpty()) {
                 createAnnotationStubs(annotations, createEmptyModifierListStub(enumEntryStub))
@@ -225,13 +224,14 @@ private class ClassClsStubBuilder(
         }
 
         createDeclarationsStubs(
-                classBody, c, thisAsProtoContainer, classProto.functionList, classProto.propertyList, classProto.typeAliasList)
+            classBody, c, thisAsProtoContainer, classProto.functionList, classProto.propertyList, classProto.typeAliasList
+        )
     }
 
     private fun isClass(): Boolean {
         return classKind == ProtoBuf.Class.Kind.CLASS ||
-               classKind == ProtoBuf.Class.Kind.ENUM_CLASS ||
-               classKind == ProtoBuf.Class.Kind.ANNOTATION_CLASS
+                classKind == ProtoBuf.Class.Kind.ENUM_CLASS ||
+                classKind == ProtoBuf.Class.Kind.ANNOTATION_CLASS
     }
 
     private fun createInnerAndNestedClasses(classBody: KotlinPlaceHolderStubImpl<KtClassBody>) {
@@ -249,13 +249,13 @@ private class ClassClsStubBuilder(
         if (classDataWithSource == null) {
             val rootFile = c.components.virtualFileForDebug
             LOG.error(
-                    "Could not find class data for nested class $nestedClassId of class ${nestedClassId.outerClassId}\n" +
-                    "Root file: ${rootFile.canonicalPath}\n" +
-                    "Dir: ${rootFile.parent.canonicalPath}\n" +
-                    "Children:\n" +
-                    rootFile.parent.children.sortedBy { it.name }.joinToString(separator = "\n") {
-                        "${it.name} (valid: ${it.isValid})"
-                    }
+                "Could not find class data for nested class $nestedClassId of class ${nestedClassId.outerClassId}\n" +
+                        "Root file: ${rootFile.canonicalPath}\n" +
+                        "Dir: ${rootFile.parent.canonicalPath}\n" +
+                        "Children:\n" +
+                        rootFile.parent.children.sortedBy { it.name }.joinToString(separator = "\n") {
+                            "${it.name} (valid: ${it.isValid})"
+                        }
             )
             return
         }

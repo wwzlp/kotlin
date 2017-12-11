@@ -29,20 +29,19 @@ import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.jetbrains.kotlin.utils.concurrent.block.LockedClearableLazyValue
 
 class KotlinDecompiledFileViewProvider(
-        manager: PsiManager,
-        file: VirtualFile,
-        physical: Boolean,
-        private val factory: (KotlinDecompiledFileViewProvider) -> KtDecompiledFile?
+    manager: PsiManager,
+    file: VirtualFile,
+    physical: Boolean,
+    private val factory: (KotlinDecompiledFileViewProvider) -> KtDecompiledFile?
 ) : SingleRootFileViewProvider(manager, file, physical, KotlinLanguage.INSTANCE) {
-    val content : LockedClearableLazyValue<String> = LockedClearableLazyValue(Any()) {
+    val content: LockedClearableLazyValue<String> = LockedClearableLazyValue(Any()) {
         val psiFile = createFile(manager.project, file, KotlinFileType.INSTANCE)
         val text = psiFile?.text ?: ""
 
         DebugUtil.startPsiModification("Invalidating throw-away copy of file that was used for getting text")
         try {
             (psiFile as? PsiFileImpl)?.markInvalidated()
-        }
-        finally {
+        } finally {
             DebugUtil.finishPsiModification()
         }
 

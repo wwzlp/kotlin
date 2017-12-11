@@ -32,11 +32,11 @@ import org.jetbrains.kotlin.utils.Jsr305State
 
 object IDELanguageSettingsProvider : LanguageSettingsProvider {
     override fun getLanguageVersionSettings(moduleInfo: ModuleInfo, project: Project): LanguageVersionSettings =
-            when (moduleInfo) {
-                is ModuleSourceInfo -> moduleInfo.module.languageVersionSettings
-                is LibraryInfo -> project.getLanguageVersionSettings(extraAnalysisFlags = getExtraAnalysisFlags(project))
-                else -> project.getLanguageVersionSettings()
-            }
+        when (moduleInfo) {
+            is ModuleSourceInfo -> moduleInfo.module.languageVersionSettings
+            is LibraryInfo -> project.getLanguageVersionSettings(extraAnalysisFlags = getExtraAnalysisFlags(project))
+            else -> project.getLanguageVersionSettings()
+        }
 
     private fun getExtraAnalysisFlags(project: Project): Map<AnalysisFlag<*>, Any?> {
         val map = mutableMapOf<AnalysisFlag<*>, Any>()

@@ -48,7 +48,7 @@ class KotlinClassFileDecompiler : ClassFileDecompilers.Full() {
 
     override fun createFileViewProvider(file: VirtualFile, manager: PsiManager, physical: Boolean): KotlinDecompiledFileViewProvider {
         val project = manager.project
-        return KotlinDecompiledFileViewProvider(manager, file, physical) factory@{ provider ->
+        return KotlinDecompiledFileViewProvider(manager, file, physical) factory@ { provider ->
             val virtualFile = provider.virtualFile
             val fileIndex = ServiceManager.getService(project, FileIndexFacade::class.java)
             if (!fileIndex.isInLibraryClasses(virtualFile) && fileIndex.isInSource(virtualFile)) return@factory null
@@ -69,18 +69,23 @@ private val decompilerRendererForClassFiles = DescriptorRenderer.withOptions {
 }
 
 fun buildDecompiledTextForClassFile(
-        classFile: VirtualFile,
-        resolver: ResolverForDecompiler = DeserializerForClassfileDecompiler(classFile)
+    classFile: VirtualFile,
+    resolver: ResolverForDecompiler = DeserializerForClassfileDecompiler(classFile)
 ): DecompiledText {
     val (classHeader, classId) = IDEKotlinBinaryClassCache.getKotlinBinaryClassHeaderData(classFile)
-                                 ?: error("Decompiled data factory shouldn't be called on an unsupported file: " + classFile)
+            ?: error("Decompiled data factory shouldn't be called on an unsupported file: " + classFile)
 
     if (!classHeader.metadataVersion.isCompatible()) {
         return createIncompatibleAbiVersionDecompiledText(JvmMetadataVersion.INSTANCE, classHeader.metadataVersion)
     }
 
     fun buildText(declarations: List<DeclarationDescriptor>) =
-            buildDecompiledText(classId.packageFqName, declarations, decompilerRendererForClassFiles, listOf(ByDescriptorIndexer, BySignatureIndexer))
+        buildDecompiledText(
+            classId.packageFqName,
+            declarations,
+            decompilerRendererForClassFiles,
+            listOf(ByDescriptorIndexer, BySignatureIndexer)
+        )
 
     return when (classHeader.kind) {
         KotlinClassHeader.Kind.FILE_FACADE ->

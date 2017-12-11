@@ -48,12 +48,14 @@ interface LibraryDependenciesCache {
 class LibraryDependenciesCacheImpl(private val project: Project) : LibraryDependenciesCache {
 
     val cache by CachedValue(project) {
-        CachedValueProvider.Result(ContainerUtil.createConcurrentWeakMap<Library, LibrariesAndSdks>(),
-                                   ProjectRootManager.getInstance(project))
+        CachedValueProvider.Result(
+            ContainerUtil.createConcurrentWeakMap<Library, LibrariesAndSdks>(),
+            ProjectRootManager.getInstance(project)
+        )
     }
 
     override fun getLibrariesAndSdksUsedWith(library: Library): LibrariesAndSdks =
-            cache.getOrPut(library) { computeLibrariesAndSdksUsedWith(library) }
+        cache.getOrPut(library) { computeLibrariesAndSdksUsedWith(library) }
 
 
     //NOTE: used LibraryRuntimeClasspathScope as reference
@@ -63,8 +65,7 @@ class LibraryDependenciesCacheImpl(private val project: Project) : LibraryDepend
             if (orderEntry is ModuleOrderEntry) {
                 val module = orderEntry.module
                 module != null && module !in processedModules
-            }
-            else {
+            } else {
                 true
             }
         }
@@ -77,22 +78,24 @@ class LibraryDependenciesCacheImpl(private val project: Project) : LibraryDepend
         for (module in getLibraryUsageIndex().modulesLibraryIsUsedIn[library]) {
             if (!processedModules.add(module)) continue
 
-            ModuleRootManager.getInstance(module).orderEntries().recursively().satisfying(condition).process(object : RootPolicy<Unit>() {
-                override fun visitModuleSourceOrderEntry(moduleSourceOrderEntry: ModuleSourceOrderEntry, value: Unit) {
-                    processedModules.add(moduleSourceOrderEntry.ownerModule)
-                }
-
-                override fun visitLibraryOrderEntry(libraryOrderEntry: LibraryOrderEntry, value: Unit) {
-                    val otherLibrary = libraryOrderEntry.library
-                    if (otherLibrary != null && compatiblePlatforms(platform, getLibraryPlatform(otherLibrary))) {
-                        libraries.add(otherLibrary)
+            ModuleRootManager.getInstance(module).orderEntries().recursively().satisfying(condition).process(
+                object : RootPolicy<Unit>() {
+                    override fun visitModuleSourceOrderEntry(moduleSourceOrderEntry: ModuleSourceOrderEntry, value: Unit) {
+                        processedModules.add(moduleSourceOrderEntry.ownerModule)
                     }
-                }
 
-                override fun visitJdkOrderEntry(jdkOrderEntry: JdkOrderEntry, value: Unit) {
-                    sdks.addIfNotNull(jdkOrderEntry.jdk)
-                }
-            }, Unit)
+                    override fun visitLibraryOrderEntry(libraryOrderEntry: LibraryOrderEntry, value: Unit) {
+                        val otherLibrary = libraryOrderEntry.library
+                        if (otherLibrary != null && compatiblePlatforms(platform, getLibraryPlatform(otherLibrary))) {
+                            libraries.add(otherLibrary)
+                        }
+                    }
+
+                    override fun visitJdkOrderEntry(jdkOrderEntry: JdkOrderEntry, value: Unit) {
+                        sdks.addIfNotNull(jdkOrderEntry.jdk)
+                    }
+                }, Unit
+            )
         }
 
         return Pair(libraries.toList(), sdks.toList())

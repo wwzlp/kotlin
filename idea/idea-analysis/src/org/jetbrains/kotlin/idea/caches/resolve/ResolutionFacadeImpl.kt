@@ -36,8 +36,8 @@ import org.jetbrains.kotlin.resolve.lazy.ResolveSession
 import org.jetbrains.kotlin.utils.addToStdlib.firstNotNullResult
 
 internal class ResolutionFacadeImpl(
-        private val projectFacade: ProjectResolutionFacade,
-        private val moduleInfo: IdeaModuleInfo
+    private val projectFacade: ProjectResolutionFacade,
+    private val moduleInfo: IdeaModuleInfo
 ) : ResolutionFacade {
     override val project: Project
         get() = projectFacade.project
@@ -59,22 +59,21 @@ internal class ResolutionFacadeImpl(
         return resolveElementCache.resolveToElements(elements, bodyResolveMode)
     }
 
-    override fun analyzeFullyAndGetResult(elements: Collection<KtElement>): AnalysisResult
-            = projectFacade.getAnalysisResultsForElements(elements)
+    override fun analyzeFullyAndGetResult(elements: Collection<KtElement>): AnalysisResult =
+        projectFacade.getAnalysisResultsForElements(elements)
 
     override fun resolveToDescriptor(declaration: KtDeclaration, bodyResolveMode: BodyResolveMode): DeclarationDescriptor {
         return if (KtPsiUtil.isLocal(declaration)) {
             val bindingContext = analyze(declaration, bodyResolveMode)
             bindingContext[BindingContext.DECLARATION_TO_DESCRIPTOR, declaration]
-            ?: getFrontendService(moduleInfo, AbsentDescriptorHandler::class.java).diagnoseDescriptorNotFound(declaration)
-        }
-        else {
+                    ?: getFrontendService(moduleInfo, AbsentDescriptorHandler::class.java).diagnoseDescriptorNotFound(declaration)
+        } else {
             val resolveSession = projectFacade.resolverForModuleInfo(declaration.getModuleInfo()).componentProvider.get<ResolveSession>()
             resolveSession.resolveToDescriptor(declaration)
         }
     }
 
-    override fun <T : Any> getFrontendService(serviceClass: Class<T>): T  = getFrontendService(moduleInfo, serviceClass)
+    override fun <T : Any> getFrontendService(serviceClass: Class<T>): T = getFrontendService(moduleInfo, serviceClass)
 
     override fun <T : Any> getIdeService(serviceClass: Class<T>): T {
         return projectFacade.resolverForModuleInfo(moduleInfo).componentProvider.create(serviceClass)
@@ -85,7 +84,9 @@ internal class ResolutionFacadeImpl(
     }
 
     override fun <T : Any> tryGetFrontendService(element: PsiElement, serviceClass: Class<T>): T? {
-        return element.getModuleInfos().firstNotNullResult { projectFacade.tryGetResolverForModuleInfo(it)?.componentProvider?.tryGetService(serviceClass) }
+        return element.getModuleInfos().firstNotNullResult {
+            projectFacade.tryGetResolverForModuleInfo(it)?.componentProvider?.tryGetService(serviceClass)
+        }
     }
 
     fun <T : Any> getFrontendService(ideaModuleInfo: IdeaModuleInfo, serviceClass: Class<T>): T {

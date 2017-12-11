@@ -43,14 +43,14 @@ import java.io.InputStream
 
 fun DeserializerForClassfileDecompiler(classFile: VirtualFile): DeserializerForClassfileDecompiler {
     val kotlinClassHeaderInfo = IDEKotlinBinaryClassCache.getKotlinBinaryClassHeaderData(classFile)
-                                ?: error("Decompiled data factory shouldn't be called on an unsupported file: " + classFile)
+            ?: error("Decompiled data factory shouldn't be called on an unsupported file: " + classFile)
     val packageFqName = kotlinClassHeaderInfo.classId.packageFqName
     return DeserializerForClassfileDecompiler(classFile.parent!!, packageFqName)
 }
 
 class DeserializerForClassfileDecompiler(
-        packageDirectory: VirtualFile,
-        directoryPackageFqName: FqName
+    packageDirectory: VirtualFile,
+    directoryPackageFqName: FqName
 ) : DeserializerForDecompilerBase(directoryPackageFqName) {
     override val targetPlatform: TargetPlatform get() = JvmPlatform
     override val builtIns: KotlinBuiltIns get() = DefaultBuiltIns.Instance
@@ -63,12 +63,12 @@ class DeserializerForClassfileDecompiler(
         val classDataFinder = DirectoryBasedDataFinder(classFinder, LOG)
         val notFoundClasses = NotFoundClasses(storageManager, moduleDescriptor)
         val annotationAndConstantLoader =
-                BinaryClassAnnotationAndConstantLoaderImpl(moduleDescriptor, notFoundClasses, storageManager, classFinder)
+            BinaryClassAnnotationAndConstantLoaderImpl(moduleDescriptor, notFoundClasses, storageManager, classFinder)
 
         deserializationComponents = DeserializationComponents(
-                storageManager, moduleDescriptor, DeserializationConfiguration.Default, classDataFinder, annotationAndConstantLoader,
-                packageFragmentProvider, ResolveEverythingToKotlinAnyLocalClassifierResolver(builtIns), LoggingErrorReporter(LOG),
-                LookupTracker.DO_NOTHING, JavaFlexibleTypeDeserializer, emptyList(), notFoundClasses
+            storageManager, moduleDescriptor, DeserializationConfiguration.Default, classDataFinder, annotationAndConstantLoader,
+            packageFragmentProvider, ResolveEverythingToKotlinAnyLocalClassifierResolver(builtIns), LoggingErrorReporter(LOG),
+            LookupTracker.DO_NOTHING, JavaFlexibleTypeDeserializer, emptyList(), notFoundClasses
         )
     }
 
@@ -87,8 +87,8 @@ class DeserializerForClassfileDecompiler(
         }
         val (nameResolver, packageProto) = JvmProtoBufUtil.readPackageDataFrom(annotationData, strings)
         val membersScope = DeserializedPackageMemberScope(
-                createDummyPackageFragment(packageFqName), packageProto, nameResolver,
-                JvmPackagePartSource(binaryClassForPackageClass), deserializationComponents
+            createDummyPackageFragment(packageFqName), packageProto, nameResolver,
+            JvmPackagePartSource(binaryClassForPackageClass), deserializationComponents
         ) { emptyList() }
         return membersScope.getContributedDescriptors().toList()
     }
@@ -99,8 +99,8 @@ class DeserializerForClassfileDecompiler(
 }
 
 class DirectoryBasedClassFinder(
-        val packageDirectory: VirtualFile,
-        val directoryPackageFqName: FqName
+    val packageDirectory: VirtualFile,
+    val directoryPackageFqName: FqName
 ) : KotlinClassFinder {
     override fun findKotlinClass(javaClass: JavaClass) = findKotlinClass(javaClass.classId)
 
@@ -127,8 +127,8 @@ class DirectoryBasedClassFinder(
 }
 
 class DirectoryBasedDataFinder(
-        val classFinder: DirectoryBasedClassFinder,
-        val log: Logger
+    val classFinder: DirectoryBasedClassFinder,
+    val log: Logger
 ) : ClassDataFinder {
     override fun findClassData(classId: ClassId): ClassDataWithSource? {
         val binaryClass = classFinder.findKotlinClass(classId) ?: return null
