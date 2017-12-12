@@ -17,7 +17,9 @@ buildscript {
             "https://plugins.gradle.org/m2",
             "http://repository.jetbrains.com/utils/",
             "https://repo.gradle.org/gradle/libs-releases-local", // for native-platform
-            "https://jetbrains.bintray.com/intellij-third-party-dependencies") // for jflex
+            "https://jetbrains.bintray.com/intellij-third-party-dependencies", // for jflex
+            "https://dl.bintray.com/jetbrains/markdown" // for org.jetbrains:markdown
+    )
 
     extra["repos"] = repos
 
@@ -133,9 +135,7 @@ extra["versions.robolectric"] = "3.1"
 extra["versions.org.springframework"] = "4.2.0.RELEASE"
 extra["versions.idea.NodeJS"] = "172.3757.32"
 extra["versions.jflex"] = "1.7.0"
-
-val markdownVer =  "4054 - Kotlin 1.0.2-dev-566".replace(" ", "%20") // fixed here, was last with "status:SUCCESS,tag:forKotlin"
-extra["markdownParserRepo"] = "https://teamcity.jetbrains.com/guestAuth/repository/download/IntelliJMarkdownParser_Build/$markdownVer/([artifact]_[ext]/)[artifact](.[ext])"
+extra["versions.markdown"] = "0.1.25"
 
 // the former "ideaSdk/core" dir contents without intellij-core.jar
 extra["IntellijCoreDependencies"] =
@@ -296,9 +296,6 @@ allprojects {
     repositories {
         for (repo in (rootProject.extra["repos"] as List<String>)) {
             maven { setUrl(repo) }
-        }
-        ivy {
-            artifactPattern(rootProject.extra["markdownParserRepo"] as String)
         }
         intellijSdkRepo(project)
         androidDxJarRepo(project)
