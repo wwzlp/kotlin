@@ -169,13 +169,15 @@ class KotlinUastApiTest : AbstractKotlinUastTest() {
     }
 
     @Test
-    fun testBrokenMethodTypeResolve() = doTest("BrokenMethod",
-                                               fun(_: String, file: UFile) {
-                                                   file.accept(object : AbstractUastVisitor() {
-                                                       override fun visitCallExpression(node: UCallExpression): Boolean {
-                                                           node.returnType
-                                                           return false
-                                                       }
-                                                   })
-                                               })
+    fun testBrokenMethodTypeResolve() {
+        doTest("BrokenMethod") { _, file ->
+
+            file.accept(object : AbstractUastVisitor() {
+                override fun visitCallExpression(node: UCallExpression): Boolean {
+                    node.returnType
+                    return false
+                }
+            })
+        }
+    }
 }
