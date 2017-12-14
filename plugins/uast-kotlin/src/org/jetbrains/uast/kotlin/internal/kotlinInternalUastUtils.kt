@@ -114,9 +114,12 @@ internal fun KotlinType.toPsiType(source: UElement, element: KtElement, boxed: B
 private fun KotlinType.containsLocalTypes(): Boolean {
     val typeDeclarationDescriptor = this.constructor.declarationDescriptor
     if (typeDeclarationDescriptor is ClassDescriptor) {
-        val containerDescriptor = typeDeclarationDescriptor.containingDeclaration
-        if (containerDescriptor is PropertyDescriptor || containerDescriptor is FunctionDescriptor) {
-            return true
+        var containerDescriptor: DeclarationDescriptor? = typeDeclarationDescriptor.containingDeclaration
+        while (containerDescriptor != null) {
+            if (containerDescriptor is PropertyDescriptor || containerDescriptor is FunctionDescriptor) {
+                return true
+            }
+            containerDescriptor = containerDescriptor.containingDeclaration
         }
     }
 
