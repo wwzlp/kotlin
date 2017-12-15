@@ -404,11 +404,11 @@ public class KotlinTestUtils {
 
     public static void deleteOnShutdown(File file) {
         if (filesToDelete.isEmpty()) {
-            ShutDownTracker.getInstance().registerShutdownTask(() -> ShutDownTracker.invokeAndWait(true, true, () -> {
+            ShutDownTracker.getInstance().registerShutdownTask(() -> {
                 for (File victim : filesToDelete) {
                     FileUtil.delete(victim);
                 }
-            }));
+            });
         }
 
         filesToDelete.add(file);
