@@ -45,7 +45,7 @@ dependencies {
     compileOnly(intellijPluginDep("uml"))
     compileOnly(intellijPluginDep("JavaScriptLanguage"))
     compileOnly(intellijPluginDep("JavaScriptDebugger"))
-    compileOnly(intellijPluginDep("NodeJS"))
+    compileOnly(intellijDep("nodeJS"))
 
     testCompile(projectDist(":kotlin-test:kotlin-test-jvm"))
     testCompile(project(":idea:idea-test-framework")) { isTransitive = false }
@@ -99,7 +99,7 @@ dependencies {
     testCompile(intellijPluginDep("uml"))
     testCompile(intellijPluginDep("JavaScriptLanguage"))
     testCompile(intellijPluginDep("JavaScriptDebugger"))
-    testCompile(intellijPluginDep("NodeJS"))
+    testCompile(intellijDep("nodeJS"))
     testRuntime(intellijPluginDep("coverage"))
     testRuntime(intellijPluginDep("maven"))
     testRuntime(intellijPluginDep("android"))
