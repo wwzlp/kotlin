@@ -43,6 +43,8 @@ val ScratchFile.scratchTopPanel: ScratchTopPanel?
     }
 
 class ScratchTopPanel(project: Project) : JPanel(HorizontalLayout(5)) {
+    val progressBar: JProgressBar
+
     private val moduleChooser: ModulesComboBox
     private val isReplCheckbox: JCheckBox
     private val isMakeBeforeRunCheckbox: JCheckBox
@@ -67,6 +69,10 @@ class ScratchTopPanel(project: Project) : JPanel(HorizontalLayout(5)) {
         moduleChooser = createModuleChooser(project)
         add(JLabel("Use classpath of module"))
         add(moduleChooser)
+
+        progressBar = JProgressBar()
+        progressBar.isVisible = false
+        add(progressBar)
     }
 
     fun getModule(): Module? = moduleChooser.selectedModule
