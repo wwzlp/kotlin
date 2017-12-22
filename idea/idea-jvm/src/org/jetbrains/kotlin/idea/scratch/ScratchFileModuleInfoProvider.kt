@@ -24,15 +24,20 @@ import com.intellij.openapi.fileEditor.FileEditorManagerListener
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
+import org.jetbrains.kotlin.idea.KotlinFileType
 import org.jetbrains.kotlin.idea.caches.resolve.NotUnderContentRootModuleInfo
 import org.jetbrains.kotlin.idea.caches.resolve.productionSourceInfo
 import org.jetbrains.kotlin.idea.caches.resolve.testSourceInfo
 import org.jetbrains.kotlin.idea.scratch.ui.scratchTopPanel
+import org.jetbrains.kotlin.idea.util.application.runWriteAction
+import org.jetbrains.kotlin.parsing.KotlinParserDefinition
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.psi.moduleInfo
+import java.io.File
 
 class ScratchFileModuleInfoProvider(project: Project) : AbstractProjectComponent(project) {
 
@@ -46,6 +51,17 @@ class ScratchFileModuleInfoProvider(project: Project) : AbstractProjectComponent
             if (!ScratchFileService.isInScratchRoot(file)) return
 
             val ktFile = PsiManager.getInstance(myProject).findFile(file) as? KtFile ?: return
+
+            // Hack before api in IDEA will be introduces
+            if (file.extension == KotlinFileType.EXTENSION) {
+                runWriteAction {
+                    val newName = file.nameWithoutExtension + KotlinParserDefinition.STD_SCRIPT_EXT
+                    val existed = VfsUtil.findFileByIoFile(File(file.parent.path, newName), true)
+                    if (existed == null) {
+                        file.rename(this, newName)
+                    }
+                }
+            }
 
             val fileEditorManager = FileEditorManager.getInstance(myProject)
             val editor = fileEditorManager.getAllEditors(file).firstOrNull()
