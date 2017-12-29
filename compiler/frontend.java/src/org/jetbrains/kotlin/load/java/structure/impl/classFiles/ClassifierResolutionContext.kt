@@ -117,4 +117,6 @@ class ClassifierResolutionContext private constructor(
     private fun createClassIdForTopLevel(internalName: String) = ClassId.topLevel(FqName(internalName.replace('/', '.')))
 
     internal fun resolveByInternalName(c: String) = resolveClass(mapInternalNameToClassId(c))
+
+    internal fun mapDescToClassId(desc: String): ClassId = mapInternalNameToClassId(desc.removePrefix("L").removeSuffix(";"))
 }
