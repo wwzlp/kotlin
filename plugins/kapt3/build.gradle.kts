@@ -11,12 +11,7 @@ dependencies {
     compile(project(":compiler:frontend.java"))
     compile(project(":compiler:plugin-api"))
     testCompile(project(":compiler.tests-common"))
-
-    testCompile(projectTests(":compiler.tests-common"))
     testCompile(ideaSdkDeps("idea", "idea_rt", "openapi", "platform-impl"))
-
-    compileOnly(project(":kotlin-annotation-processing-runtime"))
-
     testCompile(commonDep("junit:junit"))
 }
 
