@@ -38,12 +38,11 @@ class RunScratchAction : AnAction(
         val editor = FileEditorManager.getInstance(project).selectedTextEditor ?: return
         val psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.document) ?: return
 
-        val isMakeBeforeRun = false // todo use property from panel
-
         val provider = ScratchFileLanguageProvider.get(psiFile.language) ?: return
 
         val scratchFile = provider.createFile(psiFile) ?: return
         val isRepl = scratchFile.scratchTopPanel?.isRepl() ?: return
+        val isMakeBeforeRun = scratchFile.scratchTopPanel?.isMakeBeforeRun() ?: return
 
         val handler = provider.getOutputHandler()
 
