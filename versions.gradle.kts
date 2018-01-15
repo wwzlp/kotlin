@@ -30,7 +30,7 @@
  * limitations under the License.
  */
 
-extra["versions.intellijSdk"] = "172.4343.14"
+extra["versions.intellijSdk"] = "173.4127.27"
 extra["versions.androidBuildTools"] = "r23.0.1"
 extra["versions.idea.NodeJS"] = "172.3757.32"
 //extra["versions.intellijSdk"] = "173.3942.27"
