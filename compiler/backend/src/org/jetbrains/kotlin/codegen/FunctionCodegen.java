@@ -84,10 +84,10 @@ import static org.jetbrains.kotlin.descriptors.CallableMemberDescriptor.Kind.DEC
 import static org.jetbrains.kotlin.descriptors.ModalityKt.isOverridable;
 import static org.jetbrains.kotlin.descriptors.annotations.AnnotationUseSiteTarget.*;
 import static org.jetbrains.kotlin.descriptors.annotations.AnnotationUtilKt.isEffectivelyInlineOnly;
+import static org.jetbrains.kotlin.diagnostics.Errors.EXPECTED_FUNCTION_SOURCE_WITH_DEFAULT_ARGUMENTS_NOT_FOUND;
 import static org.jetbrains.kotlin.resolve.DescriptorToSourceUtils.getSourceFromDescriptor;
 import static org.jetbrains.kotlin.resolve.DescriptorUtils.*;
 import static org.jetbrains.kotlin.resolve.jvm.AsmTypes.OBJECT_TYPE;
-import static org.jetbrains.kotlin.resolve.jvm.diagnostics.ErrorsJvm.EXPECTED_FUNCTION_SOURCE_WITH_DEFAULT_ARGUMENTS_NOT_FOUND;
 import static org.jetbrains.kotlin.types.expressions.ExpressionTypingUtils.*;
 import static org.jetbrains.org.objectweb.asm.Opcodes.*;
 

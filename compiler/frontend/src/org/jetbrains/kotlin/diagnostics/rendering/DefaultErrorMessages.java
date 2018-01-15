@@ -265,6 +265,10 @@ public class DefaultErrorMessages {
         MAP.put(ACTUAL_TYPE_ALIAS_WITH_COMPLEX_SUBSTITUTION, "Type arguments in the right-hand side of actual type alias should be its type parameters in the same order, e.g. 'actual typealias Foo<A, B> = Bar<A, B>'");
         MAP.put(ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS, "Actual function cannot have default argument values, they should be declared in the expected function");
 
+        MAP.put(EXPECTED_FUNCTION_SOURCE_WITH_DEFAULT_ARGUMENTS_NOT_FOUND,
+                "Expected function source is not found, therefore it's impossible to generate default argument values declared there. " +
+                "Please add the corresponding file to compilation sources");
+
         MAP.put(NO_ACTUAL_FOR_EXPECT, "Expected {0} has no actual declaration in module{1}{2}", DECLARATION_NAME_WITH_KIND,
                 PLATFORM, PlatformIncompatibilityDiagnosticRenderer.TEXT);
         MAP.put(ACTUAL_WITHOUT_EXPECT, "{0} has no corresponding expected declaration{1}", CAPITALIZED_DECLARATION_NAME_WITH_KIND_AND_PLATFORM,

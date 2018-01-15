@@ -581,6 +581,8 @@ public interface Errors {
     DiagnosticFactory0<KtTypeAlias> ACTUAL_TYPE_ALIAS_WITH_COMPLEX_SUBSTITUTION = DiagnosticFactory0.create(ERROR, DECLARATION_SIGNATURE);
     DiagnosticFactory0<PsiElement> ACTUAL_FUNCTION_WITH_DEFAULT_ARGUMENTS = DiagnosticFactory0.create(ERROR);
 
+    DiagnosticFactory0<PsiElement> EXPECTED_FUNCTION_SOURCE_WITH_DEFAULT_ARGUMENTS_NOT_FOUND = DiagnosticFactory0.create(ERROR);
+
     DiagnosticFactory3<KtNamedDeclaration, MemberDescriptor, ModuleDescriptor,
             Map<Incompatible, Collection<MemberDescriptor>>> NO_ACTUAL_FOR_EXPECT =
             DiagnosticFactory3.create(ERROR, INCOMPATIBLE_DECLARATION);
